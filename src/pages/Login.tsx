@@ -63,6 +63,13 @@ function Login() {
               Login
             </button>
           </form>
+
+          <button
+            onClick={() => navigate('/')}
+            className="w-full mt-6 px-8 py-4 bg-white border-2 border-sky-500 text-sky-600 rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 hover:bg-sky-50"
+          >
+            Back to Home
+          </button>
         </div>
       </div>
     </div>
