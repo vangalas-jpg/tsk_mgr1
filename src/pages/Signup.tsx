@@ -1,15 +1,47 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '../lib/supabase';
 
 function Signup() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleSignup = (e: React.FormEvent) => {
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    navigate('/dashboard');
+    setError('');
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters long');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+      });
+
+      if (error) throw error;
+
+      if (data.user) {
+        navigate('/dashboard');
+      }
+    } catch (error: any) {
+      setError(error.message || 'An error occurred during signup');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -21,6 +53,12 @@ function Signup() {
           </h1>
 
           <form onSubmit={handleSignup} className="space-y-6">
+            {error && (
+              <div className="bg-red-50 border-2 border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                {error}
+              </div>
+            )}
+
             <div>
               <label
                 htmlFor="email"
@@ -34,7 +72,8 @@ function Signup() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full px-4 py-3 border-2 border-sky-200 rounded-lg focus:outline-none focus:border-sky-500 transition-colors text-gray-700"
+                disabled={loading}
+                className="w-full px-4 py-3 border-2 border-sky-200 rounded-lg focus:outline-none focus:border-sky-500 transition-colors text-gray-700 disabled:bg-gray-100 disabled:cursor-not-allowed"
                 placeholder="Enter your email"
               />
             </div>
@@ -52,7 +91,8 @@ function Signup() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full px-4 py-3 border-2 border-sky-200 rounded-lg focus:outline-none focus:border-sky-500 transition-colors text-gray-700"
+                disabled={loading}
+                className="w-full px-4 py-3 border-2 border-sky-200 rounded-lg focus:outline-none focus:border-sky-500 transition-colors text-gray-700 disabled:bg-gray-100 disabled:cursor-not-allowed"
                 placeholder="Enter your password"
               />
             </div>
@@ -70,16 +110,18 @@ function Signup() {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
-                className="w-full px-4 py-3 border-2 border-sky-200 rounded-lg focus:outline-none focus:border-sky-500 transition-colors text-gray-700"
+                disabled={loading}
+                className="w-full px-4 py-3 border-2 border-sky-200 rounded-lg focus:outline-none focus:border-sky-500 transition-colors text-gray-700 disabled:bg-gray-100 disabled:cursor-not-allowed"
                 placeholder="Confirm your password"
               />
             </div>
 
             <button
               type="submit"
-              className="w-full px-8 py-4 bg-gradient-to-r from-sky-500 to-blue-600 text-white rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 hover:from-sky-600 hover:to-blue-700 mt-8"
+              disabled={loading}
+              className="w-full px-8 py-4 bg-gradient-to-r from-sky-500 to-blue-600 text-white rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 hover:from-sky-600 hover:to-blue-700 mt-8 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
             >
-              Signup
+              {loading ? 'Creating account...' : 'Signup'}
             </button>
           </form>
 
