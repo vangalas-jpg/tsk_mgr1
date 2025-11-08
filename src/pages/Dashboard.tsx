@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { Sparkles } from 'lucide-react';
+import ProfileCard from '../components/ProfileCard';
 
 interface Task {
   id: string;
@@ -260,8 +261,9 @@ function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-sky-300 via-blue-200 to-cyan-200 px-4 py-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-2xl shadow-2xl p-8 md:p-12">
+      <div className="max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 bg-white rounded-2xl shadow-2xl p-8 md:p-12">
           <h1 className="text-4xl md:text-5xl font-bold text-sky-600 mb-10 text-center">
             Your Tasks
           </h1>
@@ -417,6 +419,11 @@ function Dashboard() {
           >
             Logout
           </button>
+          </div>
+
+          <div className="lg:col-span-1">
+            <ProfileCard />
+          </div>
         </div>
       </div>
     </div>
